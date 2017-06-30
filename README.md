@@ -52,3 +52,25 @@ Reading to "/dev/stdout" from 0x02820000..0x02821000 !
 
 rango@ubuntu:~/obmcutil-commands$ 
 ```
+
+
+`How to get system state`
+
+`via REST`
+```
+rango@ubuntu:~/obmcutil-commands$ ./rest_cmd -i xx.xx.xx.xx -o state
+BMC state: Ready
+Chassis Power state: On
+Host state: Running
+```
+
+`via BMC util command`
+```
+rango@ubuntu:~/obmcutil-commands$ ./rest_cmd -i xx.xx.xx.xx -c "/usr/sbin/obmcutil state"
+
+Executing: /usr/sbin/obmcutil state
+CurrentBMCState:    xyz.openbmc_project.State.BMC.BMCState.Ready
+CurrentPowerState:  xyz.openbmc_project.State.Chassis.PowerState.On
+CurrentHostState:   xyz.openbmc_project.State.Host.HostState.Running
+rango@ubuntu:~/obmcutil-commands$ 
+```
