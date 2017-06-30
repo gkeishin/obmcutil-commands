@@ -1,0 +1,198 @@
+#!/usr/bin/python
+import sys
+import os
+import getopt
+import requests
+import json
+import logging
+import warnings
+import httplib
+import obmcrequests
+import socket
+from paramiko import SSHClient
+
+def execute_command(ip, uname, pswd, cmd):
+    ssh = SSHClient()
+    ssh.load_system_host_keys()
+    ssh.connect(ip, username=uname, password=pswd)
+    print "\nExecuting:", cmd
+    stdin, stdout, stderr = ssh.exec_command(cmd)
+    lines = stdout.readlines()
+    for line in lines:
+        print line
+    #print stderr.readlines()
+    ssh.close()
+
+warnings.filterwarnings("ignore")
+
+def ssh_call(host, uname, password, command):
+    execute_command(host, uname, password, command)
+
+def rest_call(host, option, url, uname, password, parm=None):
+    e  = obmcrequests.obmcConnection(host, uname, password)
+    if option =="GET":
+        print "Executing: %s  %s"% (option, url)
+        e.get(url)
+        print "\n",url
+        msg = e.data()
+        json_pretty_format(msg)
+    if option =="PUT":
+        print "Executing: %s  %s %s"% (option, url, parm)
+        e.put(url,parm)
+    if option =="poweron":
+        host_poweron(e)
+    if option =="poweroff":
+        host_poweroff(e)
+    if option =="reboot":
+        reboot_bmc(e)
+    if option =="host":
+        host_state(e)
+    if option =="chassis":
+        chassis_power(e)
+    if option =="bmc":
+        bmc_state(e)
+    if option =="state":
+        bmc_state(e)
+        chassis_power(e)
+        host_state(e)
+
+def host_poweron(e):
+    print "Powering On"
+    host = '/xyz/openbmc_project/state/host0/'
+    url = host + 'attr/RequestedHostTransition'
+    parm = 'xyz.openbmc_project.State.Host.Transition.On'
+    e.put(url,parm)
+
+def host_poweroff(e):
+    print "Powering Off"
+    host = '/xyz/openbmc_project/state/host0/'
+    url = host + 'attr/RequestedHostTransition'
+    parm = 'xyz.openbmc_project.State.Host.Transition.Off'
+    e.put(url,parm)
+
+def reboot_bmc(e):
+    print "Rebooting BMC"
+    host = '/xyz/openbmc_project/state/bmc0/'
+    url = host + 'attr/RequestedBMCTransition'
+    parm = 'xyz.openbmc_project.State.BMC.Transition.Reboot'
+    e.put(url,parm)
+
+def host_state(e):
+    host = '/xyz/openbmc_project/state/host0/'
+    url = host + 'attr/CurrentHostState'
+    e.get(url)
+    msg = e.data()
+    print '\nHost state:',msg.rsplit('.', 1)[1]
+
+def chassis_power(e):
+    chassis = '/xyz/openbmc_project/state/chassis0/'
+    url = chassis + 'attr/CurrentPowerState'
+    e.get(url)
+    msg = e.data()
+    print '\nChassis Power state:',msg.rsplit('.', 1)[1]
+
+def bmc_state(e):
+    chassis = '/xyz/openbmc_project/state/bmc0/'
+    url = chassis + 'attr/CurrentBMCState'
+    e.get(url)
+    msg = e.data()
+    print '\nBMC state:',msg.rsplit('.', 1)[1]
+
+########################################################################
+#   @brief    Print the JSON data pretty format to Console
+#   @param    response: @type json: JSON response data
+#   @return   None
+########################################################################
+def json_pretty_format(response):
+    print json.dumps( response, sort_keys=True, indent=4 )
+
+def usage():
+    name = 'rest_cmd'
+    print '\nUsage: '
+    print name, '-i <Host> -o <GET/PUT> -u <url path> -p <parmeters>'
+    print '\t-i | --host=   : Host IP'
+    print '\t-o | --option= : GET/PUT/POST REST request'
+    print '\t-u | --url=    : url path of the REST object'
+    print '\t-p | --parm=   : parameter'
+    print '\t-c | --command=   : command'
+    print '\n\t --------------------------------------------------------------'
+    print '\t *** Examples ***:'
+    print '\t *** Short cut commands for state/on/off/reboot ***:'
+    print '\t --------------------------------------------------------------'
+    print '\t Get system state(BMC/Chassis/Host):'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o state'
+    print '\t Poweron system:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o poweron'
+    print '\t Poweroff system:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o poweroff'
+    print '\t Reboot BMC:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o reboot'
+    print '\t --------------------------------------------------------------'
+    print '\t Get BMC state:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o bmc'
+    print '\t Get Host state:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o host'
+    print '\t Get Chassis power state:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o chassis'
+    print '\t --------------------------------------------------------------'
+    print '\t GET Operation:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/'
+    print '\t Enumerate Operation:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/enumerate'
+    print '\t --------------------------------------------------------------'
+    print '\t *** You can use it with url for other interfaces ****:'
+    print '\t --------------------------------------------------------------'
+    print '\t Host Power On:'
+    print '\t rest_cmd  -i xx.xx.xx.xx -o PUT -u /xyz/openbmc_project/state/host0/attr/RequestedHostTransition -p xyz.openbmc_project.State.Host.Transition.On'
+    print '\t ----------------------------------------------------------------'
+    sys.exit()
+
+
+def main(argv):
+
+    uname = 'root'
+    password = '0penBmc'
+    host = ''
+    option = ''
+    url = ''
+    parm = ''
+    command=''
+
+    try:
+        opts, args = getopt.getopt(argv, "h:c:i:o:u:p:", ["command=", "host=", "option=", "url=", "parm=",])
+    except getopt.GetoptError:
+        usage()
+
+    for opt, arg in opts:
+        if opt == '-h':
+            usage()
+        elif opt in ("-c", "--command"):
+            command = arg
+        elif opt in ("-i", "--host"):
+            host = arg
+        elif opt in ("-o", "--option"):
+            option = arg
+        elif opt in ("-u", "--url"):
+            url = arg
+        elif opt in ("-p", "--parm"):
+            parm = arg
+
+    if host == '':
+        usage()
+
+    option_list = ['state', 'poweron', 'poweroff', 'reboot', 'bmc', 'host', 'chassis']
+    if option in option_list:
+        rest_call(host, option, None, uname, password, None)
+        sys.exit()
+
+    if option == '' or url == '':
+        if not command:
+            usage()
+
+    if not command:
+        rest_call(host, option, url, uname, password, parm)
+    else:
+        ssh_call(host, uname, password, command)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
