@@ -74,3 +74,49 @@ CurrentPowerState:  xyz.openbmc_project.State.Chassis.PowerState.On
 CurrentHostState:   xyz.openbmc_project.State.Host.HostState.Running
 rango@ubuntu:~/obmcutil-commands$ 
 ```
+
+
+
+`Tool Usage help`
+
+```
+Usage: 
+rest_cmd -i <Host> -o <GET/PUT> -u <url path> -p <parmeters>
+	-i | --host=   : Host IP
+	-o | --option= : GET/PUT/POST REST request
+	-u | --url=    : url path of the REST object
+	-p | --parm=   : parameter
+	-c | --command=   : command
+
+	 --------------------------------------------------------------
+	 *** Examples ***:
+	 *** Short cut commands for state/on/off/reboot ***:
+	 --------------------------------------------------------------
+	 Get system state(BMC/Chassis/Host):
+	 rest_cmd  -i xx.xx.xx.xx -o state
+	 Poweron system:
+	 rest_cmd  -i xx.xx.xx.xx -o poweron
+	 Poweroff system:
+	 rest_cmd  -i xx.xx.xx.xx -o poweroff
+	 Reboot BMC:
+	 rest_cmd  -i xx.xx.xx.xx -o reboot
+	 --------------------------------------------------------------
+	 Get BMC state:
+	 rest_cmd  -i xx.xx.xx.xx -o bmc
+	 Get Host state:
+	 rest_cmd  -i xx.xx.xx.xx -o host
+	 Get Chassis power state:
+	 rest_cmd  -i xx.xx.xx.xx -o chassis
+	 --------------------------------------------------------------
+	 GET Operation:
+	 rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/
+	 Enumerate Operation:
+	 rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/enumerate
+	 --------------------------------------------------------------
+	 *** You can use it with url for other interfaces ****:
+	 --------------------------------------------------------------
+	 Host Power On:
+	 rest_cmd  -i xx.xx.xx.xx -o PUT -u /xyz/openbmc_project/state/host0/attr/RequestedHostTransition -p xyz.openbmc_project.State.Host.Transition.On
+	 ----------------------------------------------------------------
+
+```
