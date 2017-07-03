@@ -31,7 +31,7 @@ rango@ubuntu:~/obmcutil-commands$
 
 `PNOR VERSION`
 ```
-rango@ubuntu:~/obmcutil-commands$ ./rest_cmd -i xx.xx.xx.xx -c "/usr/sbin/pflash -r /dev/stdout -P VERSION"
+$./rest_cmd -i xx.xx.xx.xx -c "/usr/sbin/pflash -r /dev/stdout -P VERSION"
 Executing: /usr/sbin/pflash -r /dev/stdout -P VERSION
 Reading to "/dev/stdout" from 0x02820000..0x02821000 !
 [                                                  ] 0%IBM-witherspoon-ibm-OP9_v1.17_1.47
@@ -53,8 +53,18 @@ Reading to "/dev/stdout" from 0x02820000..0x02821000 !
 rango@ubuntu:~/obmcutil-commands$ 
 ```
 
-
 `How to get system state`
+
+`via command line`
+```
+$ ./rest_cmd -i xx.xx.xx.xx -c "/usr/sbin/obmcutil state"
+
+Executing: /usr/sbin/obmcutil state
+CurrentBMCState:    xyz.openbmc_project.State.BMC.BMCState.Ready
+CurrentPowerState:  xyz.openbmc_project.State.Chassis.PowerState.On
+CurrentHostState:   xyz.openbmc_project.State.Host.HostState.Running
+```
+
 
 `via REST`
 ```
@@ -80,43 +90,46 @@ rango@ubuntu:~/obmcutil-commands$
 `Tool Usage help`
 
 ```
-Usage: 
+Usage:
 rest_cmd -i <Host> -o <GET/PUT> -u <url path> -p <parmeters>
-	-i | --host=   : Host IP
-	-o | --option= : GET/PUT/POST REST request
-	-u | --url=    : url path of the REST object
-	-p | --parm=   : parameter
-	-c | --command=   : command
+        -i | --host=   : Host IP
+        -o | --option= : GET/PUT/POST REST request
+        -u | --url=    : url path of the REST object
+        -p | --parm=   : parameter
+        -c | --command=   : command
 
-	 --------------------------------------------------------------
-	 *** Examples ***:
-	 *** Short cut commands for state/on/off/reboot ***:
-	 --------------------------------------------------------------
-	 Get system state(BMC/Chassis/Host):
-	 rest_cmd  -i xx.xx.xx.xx -o state
-	 Poweron system:
-	 rest_cmd  -i xx.xx.xx.xx -o poweron
-	 Poweroff system:
-	 rest_cmd  -i xx.xx.xx.xx -o poweroff
-	 Reboot BMC:
-	 rest_cmd  -i xx.xx.xx.xx -o reboot
-	 --------------------------------------------------------------
-	 Get BMC state:
-	 rest_cmd  -i xx.xx.xx.xx -o bmc
-	 Get Host state:
-	 rest_cmd  -i xx.xx.xx.xx -o host
-	 Get Chassis power state:
-	 rest_cmd  -i xx.xx.xx.xx -o chassis
-	 --------------------------------------------------------------
-	 GET Operation:
-	 rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/
-	 Enumerate Operation:
-	 rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/enumerate
-	 --------------------------------------------------------------
-	 *** You can use it with url for other interfaces ****:
-	 --------------------------------------------------------------
-	 Host Power On:
-	 rest_cmd  -i xx.xx.xx.xx -o PUT -u /xyz/openbmc_project/state/host0/attr/RequestedHostTransition -p xyz.openbmc_project.State.Host.Transition.On
-	 ----------------------------------------------------------------
+         --------------------------------------------------------------
+         *** Examples ***:
+         *** Short cut commands for state/on/off/reboot ***:
+         --------------------------------------------------------------
+         Get BMC or PNOR info
+         rest_cmd  -i xx.xx.xx.xx -c "cat /etc/os-release"
+         rest_cmd  -i xx.xx.xx.xx -c -c "/usr/sbin/pflash -r /dev/stdout -P VERSION"
+         Get system state(BMC/Chassis/Host):
+         rest_cmd  -i xx.xx.xx.xx -o state
+         Poweron system:
+         rest_cmd  -i xx.xx.xx.xx -o poweron
+         Poweroff system:
+         rest_cmd  -i xx.xx.xx.xx -o poweroff
+         Reboot BMC:
+         rest_cmd  -i xx.xx.xx.xx -o reboot
+         --------------------------------------------------------------
+         Get BMC state:
+         rest_cmd  -i xx.xx.xx.xx -o bmc
+         Get Host state:
+         rest_cmd  -i xx.xx.xx.xx -o host
+         Get Chassis power state:
+         rest_cmd  -i xx.xx.xx.xx -o chassis
+         --------------------------------------------------------------
+         GET Operation:
+         rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/
+         Enumerate Operation:
+         rest_cmd  -i xx.xx.xx.xx -o GET -u /xyz/openbmc_project/enumerate
+         --------------------------------------------------------------
+         *** You can use it with url for other interfaces ****:
+         --------------------------------------------------------------
+         Host Power On:
+         rest_cmd  -i xx.xx.xx.xx -o PUT -u /xyz/openbmc_project/state/host0/attr/RequestedHostTransition -p xyz.openbmc_project.State.Host.Transition.On
+         ----------------------------------------------------------------
 
 ```
