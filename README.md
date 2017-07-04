@@ -28,7 +28,7 @@ VERSION="v1.99.7-67"
 VERSION_ID="v1.99.7-67-gdd05b96"
 PRETTY_NAME="Phosphor OpenBMC (Phosphor OpenBMC Project Reference Distro) v1.99.7-67"
 BUILD_ID="v1.99.7"
-rango@ubuntu:~/obmcutil-commands$
+$
 ```
 
 `PNOR VERSION`
@@ -52,7 +52,7 @@ Reading to "/dev/stdout" from 0x02820000..0x02821000 !
 
 [==================================================] 100%
 
-rango@ubuntu:~/obmcutil-commands$ 
+$ 
 ```
 
 `How to get system state`
