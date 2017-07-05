@@ -25,4 +25,4 @@ class ffdcConnection(object):
         ssh.load_system_host_keys()
         ssh.connect(self.ip, username=self.uname, password=self.passwd)
         print "\nExecuting:", cmd
-        stdin, stdout, stderr = ssh.exec_command(cmd)
+        stdin, stdout, stderr = ssh.exec_command("ffdc")
