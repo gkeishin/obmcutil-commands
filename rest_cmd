@@ -9,24 +9,13 @@ import warnings
 import httplib
 import obmcrequests
 import socket
-from paramiko import SSHClient
-
-def execute_command(ip, uname, pswd, cmd):
-    ssh = SSHClient()
-    ssh.load_system_host_keys()
-    ssh.connect(ip, username=uname, password=pswd)
-    print "\nExecuting:", cmd
-    stdin, stdout, stderr = ssh.exec_command(cmd)
-    lines = stdout.readlines()
-    for line in lines:
-        print line
-    #print stderr.readlines()
-    ssh.close()
+import ffdc
 
 warnings.filterwarnings("ignore")
 
 def ssh_call(host, uname, password, command):
-    execute_command(host, uname, password, command)
+    ffdcObj = ffdc.ffdcConnection(host, uname, password)
+    ffdcObj.ffdc_cmd(command)
 
 def rest_call(host, option, url, uname, password, parm=None):
     e  = obmcrequests.obmcConnection(host, uname, password)
