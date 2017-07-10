@@ -44,6 +44,25 @@ def rest_call(host, option, url, uname, password, parm=None):
         bmc_state(e)
         chassis_power(e)
         host_state(e)
+    if option =="esel":
+        esel(e)
+
+def esel(e):
+    print "Fetching esel from BMC"
+    elog_path = '/xyz/openbmc_project/logging/entry/'
+    url = elog_path + 'list'
+    e.get(url)
+    msg = e.data()
+    if msg:
+		print "Error entry(s) found:\n",msg
+    else:
+        print "No eSEL logged found"
+
+    for entry in msg:
+        e.get(entry)
+        msg = e.data()
+        print "Entry :",entry
+        json_pretty_format(msg)
 
 def host_poweron(e):
     print "Powering On"
@@ -172,7 +191,7 @@ def main(argv):
     if host == '':
         usage()
 
-    option_list = ['state', 'poweron', 'poweroff', 'reboot', 'bmc', 'host', 'chassis']
+    option_list = ['state', 'poweron', 'poweroff', 'reboot', 'bmc', 'host', 'chassis', 'esel']
     if option in option_list:
         rest_call(host, option, None, uname, password, None)
         sys.exit()
