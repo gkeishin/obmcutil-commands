@@ -117,3 +117,26 @@ class obmcConnection:
 				pickle.dump( self.response, open( pf , "wb" ) )
 
 		return self.response['message']
+
+	def delete(self, uri):
+		t  = self.ip + uri + '.p'
+		t  = t.replace('/','_')
+		pf = self.cache + '/' + t
+
+		if self.cache != '' and os.path.isfile(pf) == True:
+			self.response = pickle.load( open( pf, "rb" ) )
+		else:
+			url      = 'https://' + self.ip + uri
+			cookie   = self.get_cookie()
+			headers  = {'content-Type' :'application/json'}
+			deletedata = json.dumps({'data' : ""})
+
+			#r = requests.delete(url, cookies=cookie, data = deletedata, headers=headers, verify=False)
+			r = requests.delete(url, cookies=cookie, headers=headers, verify=False)
+
+			self.response = r.json()
+
+			if self.cache != '':
+				pickle.dump( self.response, open( pf , "wb" ) )
+
+		return self.response['message']

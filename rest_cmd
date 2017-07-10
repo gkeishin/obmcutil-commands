@@ -28,6 +28,9 @@ def rest_call(host, option, url, uname, password, parm=None):
     if option =="PUT":
         print "Executing: %s  %s %s"% (option, url, parm)
         e.put(url,parm)
+    if option =="DELETE":
+        print "Executing: %s  %s "% (option, url)
+        e.delete(url)
     if option =="poweron":
         host_poweron(e)
     if option =="poweroff":
@@ -46,9 +49,41 @@ def rest_call(host, option, url, uname, password, parm=None):
         host_state(e)
     if option =="esel":
         esel(e)
+    if option =="delete":
+        clear_elog(e)
+
+def clear_elog(e):
+    print "Deleting elog from BMC"
+    url = '/xyz/openbmc_project/logging/list'
+    e.get(url)
+    msg = e.data()
+    if msg:
+        if not any("entry" in s for s in msg):
+            print "No Error entry(s) found:\n"
+            return
+
+    elog_path = '/xyz/openbmc_project/logging/entry/'
+    url = elog_path + 'list'
+    e.get(url)
+    msg = e.data()
+    for entry in msg:
+        print "Deleting %s"% (entry)
+        e.delete(entry)
+    url = '/xyz/openbmc_project/logging/list'
+    e.get(url)
+    msg = e.data()
+    print "Error log records cleared",msg
 
 def esel(e):
     print "Fetching esel from BMC"
+    url = '/xyz/openbmc_project/logging/list'
+    e.get(url)
+    msg = e.data()
+    if msg:
+        if not any("entry" in s for s in msg):
+            print "No Error entry(s) found:\n"
+            return
+
     elog_path = '/xyz/openbmc_project/logging/entry/'
     url = elog_path + 'list'
     e.get(url)
@@ -191,7 +226,7 @@ def main(argv):
     if host == '':
         usage()
 
-    option_list = ['state', 'poweron', 'poweroff', 'reboot', 'bmc', 'host', 'chassis', 'esel']
+    option_list = ['state', 'poweron', 'poweroff', 'reboot', 'bmc', 'host', 'chassis', 'esel', 'delete']
     if option in option_list:
         rest_call(host, option, None, uname, password, None)
         sys.exit()
