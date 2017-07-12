@@ -13,6 +13,11 @@ import ffdc
 
 warnings.filterwarnings("ignore")
 
+def ffdc_call(host, uname, password):
+    ffdcObj = ffdc.ffdcConnection(host, uname, password)
+    print "Calling FFDC script on BMC"
+    ffdcObj.my_ffdc()
+
 def ssh_call(host, uname, password, command):
     ffdcObj = ffdc.ffdcConnection(host, uname, password)
     ffdcObj.ffdc_cmd(command)
@@ -232,11 +237,13 @@ def main(argv):
         sys.exit()
 
     if option == '' or url == '':
-        if not command:
+        if command == '' and option == '':
             usage()
 
-    if not command:
+    if command == '' and option != 'ffdc':
         rest_call(host, option, url, uname, password, parm)
+    elif option == 'ffdc':
+        ffdc_call(host, uname, password)
     else:
         ssh_call(host, uname, password, command)
 
