@@ -97,6 +97,10 @@ rest_cmd -i <Host> -o <GET/PUT> -u <url path> -p <parmeters>
          Get BMC or PNOR info
          rest_cmd  -i xx.xx.xx.xx -c "cat /etc/os-release"
          rest_cmd  -i xx.xx.xx.xx -c "/usr/sbin/pflash -r /dev/stdout -P VERSION"
+         --------------------------------------------------------------
+         Get BMC FFDC
+         rest_cmd  -i xx.xx.xx.xx -o ffdc
+         --------------------------------------------------------------
          Get system state(BMC/Chassis/Host):
          rest_cmd  -i xx.xx.xx.xx -o state
          Poweron system:
