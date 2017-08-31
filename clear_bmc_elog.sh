@@ -1,15 +1,21 @@
 #!/bin/bash
 # A quick simple bash script
 
-if [[ -z "$1" ]]; then
-   echo "-------------------------------"
-   echo " Please enter BMC IP/hostname"
-   echo "./clear_bmc_elog.sh  <BMC_IP>"
-   echo "-------------------------------"
+if [[ -z "$1" || -z "$2" ]]; then
+   echo "---------------------------------------------"
+   echo " Please enter BMC IP/hostname and option"
+   echo "---------------------------------------------"
+   echo "To delete eSEL/Error log entries"
+   echo "clear_bmc_elog.sh  <BMC_IP>  <logging>"
+   echo ""
+   echo "To delete BMC dump entries"
+   echo "clear_bmc_elog.sh  <BMC_IP>  <dump>"
+   echo "---------------------------------------------"
    exit 0
 fi
 
 BMC_IP=$1
+DBUS_PATH=$2
 
 echo "----------------------------------------------"
 echo "Creating REST session to BMC: $BMC_IP"
@@ -21,13 +27,13 @@ echo "----------------------------------------------"
 echo "Session established to $BMC_IP"
 echo "----------------------------------------------"
 
-list_entry=`curl -c cjar -b cjar -k -H 'Content-Type: application/json' -X GET  https://$BMC_IP/xyz/openbmc_project/logging/list | grep -v callout | grep -v manager`
+list_entry=`curl -c cjar -b cjar -k -H 'Content-Type: application/json' -X GET  https://$BMC_IP/xyz/openbmc_project/$DBUS_PATH/list | grep -v callout | grep -v manager`
 
 entries=`echo "$list_entry" | grep entry`
 
 if [[ -z "$entries" ]]; then
     echo "----------------------------------------------"
-    echo "No Error entry(s) found"
+    echo "No Error/BMC Dump entry(s) found"
     echo "----------------------------------------------"
     exit 0
 fi
@@ -43,5 +49,5 @@ done
 
 echo ""
 echo "----------------------------------------------"
-echo "All error log deleted"
+echo "All error log/BMC dump deleted"
 echo "----------------------------------------------"
