@@ -35,21 +35,17 @@ $
 ```
 $./rest_cmd -i xx.xx.xx.xx -c "/usr/sbin/pflash -r /dev/stdout -P VERSION"
 Executing: /usr/sbin/pflash -r /dev/stdout -P VERSION
-Reading to "/dev/stdout" from 0x02820000..0x02821000 !
-[                                                  ] 0%IBM-witherspoon-ibm-OP9_v1.17_1.47
-
-	op-build-v1.17-105-gf736aad-dirty
-	buildroot-2017.02.2-7-g23118ce
-	skiboot-5.6.0-158-ga1e0a047b2a0
-	hostboot-f2250d8
-	linux-4.11.6-openpower1-pe9f6e0b
-	petitboot-v1.4.3-pa7356d8
-	machine-xml-5b59a1d
-	occ-1dc97a6
-	hostboot-binaries-711147e
-	capp-ucode-9c73e9f
-	sbe-02021c6
-
+Reading to "/dev/stdout" from 0x01ff7000..0x01ff8000 !
+[                                                  ] 0%open-power-palmetto-v2.1-43-gc575972
+        buildroot-2018.05.1-9-gc99f2eeb8c
+        skiboot-v6.1
+        hostboot-p8-d3025f5-p580ec27
+        occ-p8-28f2cec
+        linux-4.17.12-openpower1-p2b6da88
+        petitboot-1.8.0
+        machine-xml-e0fae90-p90e7e34
+        hostboot-binaries-hw080118a.920
+        capp-ucode-p9-dd2-v4
 [==================================================] 100%
 
 $ 
